@@ -1,0 +1,538 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: "app-runtime-autoscaler"
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  maxReplicas: {{ .Values.appruntimeconfig.replicacountmax }}
+  minReplicas: {{ .Values.appruntimeconfig.replicacountmin }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-runtime
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.appruntimeconfig.cputhresholdpercentage }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-runtime
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-runtime
+  replicas: {{.Values.appruntimeconfig.replicacount}}
+  template:
+    metadata:
+      labels:
+        app: app-runtime
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app
+          imagePullPolicy: Always
+          image: &containerImage quickpath/app-runtime:{{.Values.image.tag}}
+          startupProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 80
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.appruntimeconfig.memoryrequest | quote }}
+              cpu: {{ .Values.appruntimeconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.appruntimeconfig.memorylimit | quote }}
+              cpu: {{ .Values.appruntimeconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server
+              name: app-codebase
+            - mountPath: /app/ui
+              name: app-ui-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+            - mountPath: /app/run_app_runtime.sh
+              name: run-app-runtime
+      {{- end }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main"
+            type: Directory
+        - name: app-ui-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+        - name: run-app-runtime
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_runtime.sh"
+            type: File
+      {{- end }}
+      
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-design
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-design
+  serviceName: app-design-service
+  replicas: {{.Values.appdesignconfig.replicacount}}
+  template:
+    metadata:
+      labels:
+        app: app-design
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app-design
+          imagePullPolicy: Always
+          image: &containerImage quickpath/app-design:{{.Values.image.tag}}
+          startupProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 80
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.appdesignconfig.memoryrequest | quote }}
+              cpu: {{ .Values.appdesignconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.appdesignconfig.memorylimit | quote }}
+              cpu: {{ .Values.appdesignconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server
+              name: app-codebase
+            - mountPath: /app/ui
+              name: app-ui-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+            - mountPath: /app/run_app_design.sh
+              name: run-app-design
+      {{- end }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main"
+            type: Directory
+        - name: app-ui-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+        - name: run-app-design
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_design.sh"
+            type: File
+      {{- end }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-scheduler
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-scheduler
+  serviceName: app-scheduler
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-scheduler
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app
+          imagePullPolicy: Always
+          image: quickpath/scheduler:{{.Values.image.tag }}
+          readinessProbe:
+            exec:
+              command:
+                - cat
+                - /tmp/liveness
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.schedulerconfig.memoryrequest | quote }}
+              cpu: {{ .Values.schedulerconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.schedulerconfig.memorylimit | quote }}
+              cpu: {{ .Values.schedulerconfig.cpulimit | quote }}
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server
+              name: app-codebase
+            - mountPath: /app/ui
+              name: app-ui-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+      {{- end }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main"
+            type: Directory
+        - name: app-ui-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+      {{- end }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-subscription-manager
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-subscription-manager
+  serviceName: app-subscription-manager
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-subscription-manager
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app
+          imagePullPolicy: Always
+          image: quickpath/subscription-manager:{{ .Values.image.tag }}
+          readinessProbe:
+            exec:
+              command:
+                - cat
+                - /tmp/liveness
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.subscriptionconfig.memoryrequest | quote }}
+              cpu: {{ .Values.subscriptionconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.subscriptionconfig.memorylimit | quote }}
+              cpu: {{ .Values.subscriptionconfig.cpulimit | quote }}
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server
+              name: app-codebase
+            - mountPath: /app/ui
+              name: app-ui-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+      {{- end }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main"
+            type: Directory
+        - name: app-ui-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+      {{- end }}
+
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-dashboard-manager
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-dashboard-manager
+  serviceName: app-dashboard-service
+  replicas: {{.Values.dashboardconfig.replicacount}}
+  template:
+    metadata:
+      labels:
+        app: app-dashboard-manager
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app-dashboard-manager
+          imagePullPolicy: Always
+          image: &containerImage quickpath/dashboard-manager:{{.Values.image.tag}}
+          startupProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 80
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost:8080/api/liveness"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.dashboardconfig.memoryrequest | quote }}
+              cpu: {{ .Values.dashboardconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.dashboardconfig.memorylimit | quote }}
+              cpu: {{ .Values.dashboardconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server
+              name: app-codebase
+            - mountPath: /app/ui
+              name: app-ui-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+            - mountPath: /app/run_app_design.sh
+              name: run-app-design
+      {{- end }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main"
+            type: Directory
+        - name: app-ui-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+        - name: run-app-design
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_design.sh"
+            type: File
+      {{- end }}

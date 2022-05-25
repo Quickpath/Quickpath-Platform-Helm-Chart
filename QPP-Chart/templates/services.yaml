@@ -1,0 +1,187 @@
+# This will need to be changed after we upgrade our Kubernetes version to 1.16.5-gke.1 is completed:
+#   https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs
+# apiVersion: networking.gke.io/v1beta1
+# kind: ManagedCertificate
+# metadata:
+#   name: app-{{.Values.kubernetes.platform_namespace}}-certificate
+#   namespace: {{.Values.kubernetes.platform_namespace}}
+# spec:
+#   domains:
+#     - {{/*app_domain_name*/}}
+
+{{- if eq .Values.loadbalancer.ingresstype "appgw" }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: "{{ .Values.kubernetes.platformnamespace }}"
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /api/service
+          pathType: Prefix
+          backend:
+            serviceName: app-runtime-service
+            servicePort: 80
+        - path: /dash
+          pathType: Prefix
+          backend:
+            serviceName: app-dashboard-service
+            servicePort: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            serviceName: app-design-service
+            servicePort: 80
+{{- end }}
+{{- if eq .Values.loadbalancer.ingresstype "alb" }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: {{ .Values.kubernetes.platformnamespace }}
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: {{ .Values.loadbalancer.ingressscheme }}
+    alb.ingress.kubernetes.io/target-type: ip
+    {{- if eq .Values.loadbalancer.sslenabled "true" }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.loadbalancer.certificate | quote }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    {{ else }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /api/service
+          pathType: Prefix
+          backend:
+            serviceName: app-runtime-service
+            servicePort: 80
+        - path: /dash
+          pathType: Prefix
+          backend:
+            serviceName: app-dashboard-service
+            servicePort: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            serviceName: app-design-service
+            servicePort: 80
+{{- end }}
+{{- if eq .Values.loadbalancer.ingresstype "microk8s" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations:
+    kubernetes.io/ingress.class: "public"
+    nginx.ingress.kubernetes.io/proxy-body-size: 200m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: "public"
+  rules:
+    - http:
+        paths:
+        - path: /api/service
+          pathType: Prefix
+          backend:
+            service: 
+              name: app-runtime-service
+              port:
+                number: 80
+        - path: /dash
+          pathType: Prefix
+          backend:
+            service:
+              name: app-dashboard-service
+              port:
+                number: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: app-design-service
+              port: 
+                number: 80
+
+{{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-runtime-service
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: NodePort
+  selector:
+    app: app-runtime
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-design-service
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: NodePort
+  selector:
+    app: app-design
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-dashboard-service
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: NodePort
+  selector:
+    app: app-dashboard-manager
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+{{- if .Values.secretsmanager.vaultusername }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vault-svc
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: ExternalName
+  externalName: vault.{{.Values.kubernetes.infrastructurenamespace}}.svc.cluster.local
+{{- end }}
+
+{{- if .Values.keycloak }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: keycloak-infra-svc
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: ExternalName
+  externalName: {{.Values.keycloak.externalservicename}}.{{.Values.kubernetes.infrastructurenamespace}}.svc.cluster.local
+{{- end }}

@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: os-environment-variables
+  namespace: {{.Values.kubernetes.platformnamespace}}
+data:
+  IS_MICROK8S_DEVELOPMENT_ENVIRONMENT: {{ if eq .Values.kubernetes.clustertype "microk8s" }}"true"{{ else }}"false"{{ end }}
+  QP_PLATFORM_NAMESPACE: {{.Values.kubernetes.platformnamespace | quote}}
+  QP_PLATFORM_VERSION: {{.Values.image.tag | quote}}
+
+  DESIGN_GUNICORN_WORKER_COUNT: {{ .Values.appdesignconfig.gunicornworkercount  | squote }}
+  DESIGN_GUNICORN_THREAD_COUNT: {{ .Values.appdesignconfig.gunicornthreadcount  | squote }}
+
+  RUNTIME_GUNICORN_WORKER_COUNT: {{ .Values.appruntimeconfig.gunicornworkercount  | squote }}
+  RUNTIME_GUNICORN_THREAD_COUNT: {{ .Values.appruntimeconfig.gunicornthreadcount  | squote }}
+
+  DASHBOARD_MANAGER_GUNICORN_WORKER_COUNT: {{ .Values.dashboardconfig.gunicornworkercount  | squote }}
+  DASHBOARD_MANAGER_GUNICORN_THREAD_COUNT: {{ .Values.dashboardconfig.gunicornthreadcount  | squote }}
+
+  ALEMBIC_UPGRADE_OR_DOWNGRADE: {{ .Values.appdesignconfig.alembicupgradeordowngrade | default "upgrade" | quote }}
+  ALEMBIC_REVISION_GUID: {{ .Values.appdesignconfig.alembicrevisionguid | default "head" | quote }}
+  APP_RUNTIME_SERVICE: 'app-runtime-service'
+  APP_DESIGN_SERVICE: 'app-design-service'
+  DOCKERHUB_CREDS_SECRET_NAME: {{ .Values.dockerhub.secretname | quote  }}
+  #NEW_RELIC_ENVIRONMENT: 'SECRET'
+  #QP_APP_DB_NAME: 'SECRET'
+  QP_APP_DB_HOST: {{ .Values.mysql.databasehost | quote}}
+  QP_APP_DB_PORT: {{ .Values.mysql.databaseport | quote}}
+  #QP_APP_DB_USERNAME: 'SECRET'
+  #QP_APP_DB_PASSWORD: 'SECRET'
+  QP_APP_ASYNC_BROKER_URL: {{ .Values.redis.host }}
+  {{- if .Values.redis.port }}
+  REDIS_PORT: {{ .Values.redis.port  | quote }}
+  {{- end }}
+  {{- if .Values.redis.password }}
+  #REDIS_PASSWORD: 'SECRET'
+  {{- end }}
+
+  APP_DESIGN_LOG_CONSOLE_LEVEL: {{ .Values.appdesignconfig.logconsolelevel | quote}}
+  APP_DESIGN_LOG_FILE_LEVEL: {{ .Values.appdesignconfig.logfilelevel | quote}}
+
+  APP_RUNTIME_LOG_CONSOLE_LEVEL: {{ .Values.appruntimeconfig.logconsolelevel | quote}}
+  APP_RUNTIME_LOG_FILE_LEVEL: {{ .Values.appruntimeconfig.logfilelevel | quote}}
+
+  APP_DASHBOARD_MANAGER_LOG_CONSOLE_LEVEL: {{ .Values.dashboardconfig.logconsolelevel | quote}}
+  APP_DASHBOARD_MANAGER_LOG_FILE_LEVEL: {{ .Values.dashboardconfig.logfilelevel | quote}}
+
+  APP_SCHEDULER_LOG_CONSOLE_LEVEL: {{ .Values.schedulerconfig.logconsolelevel | quote}}
+  APP_SCHEDULER_LOG_FILE_LEVEL: {{ .Values.schedulerconfig.logfilelevel | quote}}
+
+  APP_SUBSCRIPTION_MANAGER_LOG_CONSOLE_LEVEL: {{ .Values.subscriptionconfig.logconsolelevel | quote}}
+  APP_SUBSCRIPTION_MANAGER_LOG_FILE_LEVEL: {{ .Values.subscriptionconfig.logfilelevel | quote}}
+
+  APP_SQLALCHEMY_LOG_LEVEL: {{ .Values.appdesignconfig.sqlalchemyloglevel| default "WARNING" | quote}}
+  APP_ROOT_LOG_LEVEL: {{ .Values.appdesignconfig.rootloglevel| default "WARNING" | quote}}
+
+  #QP_APP_SECRET_KEY: 'SECRET'
+  SECRETS_MANAGER_TYPE: {{ .Values.secretsmanager.managertype }}
+  SECRETS_AWS_INSTANCE_PREFIX: {{ .Values.secretsmanager.instanceprefix | quote}}
+
+  {{- if eq .Values.secretsmanager.managertype "aws" }}
+  SECRETS_AWS_REGION_NAME: {{ .Values.secretsmanager.regionname | quote}}
+  {{- if eq .Values.secretsmanager.authtype "accesskey" }}
+  #SECRETS_AWS_ACCESS_KEY_ID: 'SECRET'
+  #SECRET_AWS_SECRET_ACCESS_KEY: 'SECRET'
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.secretsmanager.managertype "vault" }}
+  QP_SECRETS_URL: {{ .Values.secretsmanager.vaulturl | quote}}
+  #QP_SECRETS_USERNAME: 'SECRET'
+  #QP_SECRETS_PASSWORD: 'SECRET'
+  {{- end }}
+  {{- if eq .Values.secretsmanager.managertype "azure" }}
+  SECRETS_AZURE_VAULT_URL: {{ .Values.secretsmanager.azurevaulturl | quote}}
+  #SECETS_AZURE_TENANT: 'SECRET'
+  #SECETS_AZURE_CLIENT_ID: 'SECRET'
+  #SECRETS_AZURE_CLIENT_SECRET: 'SECRET'
+  {{- end }}
+
+
+  QP_KEYCLOAK_URL: "http://keycloak-infra-svc/auth/"
+  #QP_KEYCLOAK_CLIENT_ID: 'SECRET'
+  #QP_KEYCLOAK_REALM_NAME: 'SECRET'
+  #QP_KEYCLOAK_SECRET: 'SECRET'
+  #QP_KEYCLOAK_ADMIN_USERNAME: 'SECRET'
+  #QP_KEYCLOAK_ADMIN_PASSWORD: 'SECRET'
+
+  {{- if .Values.msal }}
+  MSAL_PLATFORM_BASE_URL: {{ .Values.msal.platformbaseurl | quote}}
+  MSAL_CLIENT_ID: {{ .Values.msal.clientid | quote}}
+  #MSAL_CLIENT_SECRET: 'SECRET'
+  MSAL_TENANT_ID: {{ .Values.msal.tenantid | quote}}
+  {{- end }}

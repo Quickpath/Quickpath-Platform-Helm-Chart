@@ -1,0 +1,180 @@
+# =============================================================================
+# The Kubernetes namespace for platform deployment
+kubernetes:
+  createnamespace: "false"
+  #kubernetes_namespace: "qp-demo-platform"
+  platformnamespace: <PROVIDE VALUE>
+  infrastructurenamespace: <PROVIDE VALUE>
+  #Cluster type options: eks, gks, aks, microk8s
+  clustertype: "eks"
+  # Only used for a microk8s environment when running locally
+  #microk8smountpath: "/home/ubuntu/environment/QP-Platform/"
+  #is_microk8s_development_environment: "false"
+
+
+
+
+# ingress_type is either "alb" | "microk8s"
+loadbalancer:
+  ingresstype: "alb"
+  sslenabled: "false"
+  # Load balancer exposed internally or internet facing
+  # internal or internet-facing valid values
+  ingressscheme: internal
+  # For AWS Ingress :: `arn` of certificate for use in ingress
+  #certificate: "arn:aws:acm:us-east-2:042960725425:certificate/36d43be2-8832-46df-b221-2aa9e574ecfc"
+
+
+# =============================================================================
+# Credentials to authenticate with docker to pull images
+dockerhub:
+  secretname: "dockerhub-creds"
+  dockerfilejson: <PROVIDE VALUE>
+
+# =============================================================================
+# Platform Image Tags
+image:
+  registy: 'docker.io'
+  tag: <PROVIDE VALUE>
+#app_dockerhub_image_tag: 'quickpath/app:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
+#scheduler_dockerhub_image_tag: 'quickpath/scheduler:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
+#subscription_manager_dockerhub_image_tag: 'quickpath/subscription-manager:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
+#redis_dockerhub_image_tag: 'quickpath/app-redis:b4789cde4cf45ee8a583ca14adbc8ce52e2e035d'
+
+# =============================================================================
+# Application Configuration
+#app_replica_count: 1
+appdesignconfig:
+  replicacount: 1
+  gunicornworkercount: '3'
+  gunicornthreadcount: '15'
+  # alembic_upgrade_or_downgrade: 'upgrade'
+  # alembic_revision_guid: 'head'
+  # =============================================================================
+  # Resource Allocations
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "500m"
+  cpulimit: "1000m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+  sqlalchemyloglevel: "WARNING"
+  rootloglevel: "WARNING"
+
+appruntimeconfig:
+  replicacountmin: 1
+  replicacountmax: 2
+  cputhresholdpercentage: 70
+  gunicornworkercount: '3'
+  gunicornthreadcount: '15'
+  # =============================================================================
+  # Resource Allocations
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "500m"
+  cpulimit: "1000m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+
+dashboardconfig:
+  replicacount: 1
+  gunicornworkercount: '3'
+  gunicornthreadcount: '15'
+  # =============================================================================
+  # Resource Allocations
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "500m"
+  cpulimit: "1000m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+
+schedulerconfig:
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "200m"
+  cpulimit: "400m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+
+subscriptionconfig:
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "200m"
+  cpulimit: "400m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+# =============================================================================
+# secrets_manager_type is either `aws` or  `vault`
+secretsmanager:
+  managertype: "aws"
+  instanceprefix: "eks_dev"
+
+  # =========== AWS =====================
+  regionname: "us-east-2"
+
+  #Authorization type values: serviceaccount, accesskey
+  authtype: "serviceaccount"
+
+  # Base64 Encoded - Secrets Management Credentials (Only used when manager type is aws, gcp, or azure and authtype is accesskey:
+  #accesskeyid: <PROVIDE VALUE>
+  #secretaccesskey: <PROVIDE VALUE>
+
+  # ======== Vault ========================
+  vaulturl: "http://vault-svc"
+
+  # Base64 Encoded - Secrets Management Credentials (Only used when manager type is vault):
+  #vaultusername: ZGV2
+  #vaultpassword: RG9ja2VySXNDb29s
+
+  # ======== Azure ======================
+  azurevaulturl: '<PROVIDE VALUE>'
+  azuretenant: '<PROVIDE VALUE>'
+  azureclientid: '<PROVIDE VALUE>'
+  azureclientsecret: '<PROVIDE VALUE>'
+
+# =============================================================================
+# New Relic Configuration
+# If you change `newrelic_environment_name`, you must create the environment config in the "/main/setup/newrelic.ini" file.
+newrelic:
+  enabled: "false"
+  # environmentname: "dev"
+  # Base64 Encoded - New Relic License  (Optional)
+  # licensekey: NDE0OGUyNzZhM2RlZDFjMGExOGJkMzdhZjdhMzYwNDViZDE3NGY3MQ==
+
+
+#  Base64 Encoded - MySQL Credentials
+# quickpath
+mysql:
+  rootpassword: <PROVIDE VALUE>
+  databasename: <PROVIDE VALUE>
+  databaseuser: <PROVIDE VALUE>=
+  databasepassword: <PROVIDE VALUE>
+  databasehost: app-mysql
+  databaseport: 3306
+
+# Redis Credentials (Optional)
+redis:
+  host: app-redis-master
+  port: 6379
+  #  Base64 Encoded - Redis Credentials (Optional)
+  # password:
+
+
+# Base64 Encoded -  Keycloak
+keycloak:
+  clientid: <PROVIDE VALUE>
+  clientsecret: <PROVIDE VALUE>
+  realm: <PROVIDE VALUE>
+  adminusername: <PROVIDE VALUE>
+  adminpassword: <PROVIDE VALUE>
+  externalservicename: "keycloak-http"
+
+
+# Microsoft Authentication
+# Comment Out if not used
+msal:
+  clientid: <PROVIDE VALUE>
+  clientsecret: <PROVIDE BASE64 ENCODED VALUE>
+  tenantid: <PROVIDE VALUE>
+  platformbaseurl: <PROVIDE VALUE>
