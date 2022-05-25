@@ -6,7 +6,7 @@ kubernetes:
   platformnamespace: <PROVIDE VALUE>
   infrastructurenamespace: <PROVIDE VALUE>
   #Cluster type options: eks, gks, aks, microk8s
-  clustertype: "eks"
+  clustertype: "<PROVIDE VALUE>"
   # Only used for a microk8s environment when running locally
   #microk8smountpath: "/home/ubuntu/environment/QP-Platform/"
   #is_microk8s_development_environment: "false"
@@ -16,11 +16,11 @@ kubernetes:
 
 # ingress_type is either "alb" | "microk8s"
 loadbalancer:
-  ingresstype: "alb"
+  ingresstype: "<PROVIDE VALUE>"
   sslenabled: "false"
   # Load balancer exposed internally or internet facing
   # internal or internet-facing valid values
-  ingressscheme: internal
+  ingressscheme: <PROVIDE VALUE>
   # For AWS Ingress :: `arn` of certificate for use in ingress
   #certificate: "arn:aws:acm:us-east-2:042960725425:certificate/36d43be2-8832-46df-b221-2aa9e574ecfc"
 
@@ -108,7 +108,7 @@ subscriptionconfig:
 # secrets_manager_type is either `aws` or  `vault`
 secretsmanager:
   managertype: "aws"
-  instanceprefix: "eks_dev"
+  instanceprefix: "<PROVIDE VALUE>"
 
   # =========== AWS =====================
   regionname: "us-east-2"
@@ -121,7 +121,7 @@ secretsmanager:
   #secretaccesskey: <PROVIDE VALUE>
 
   # ======== Vault ========================
-  vaulturl: "http://vault-svc"
+  #vaulturl: "http://vault-svc"
 
   # Base64 Encoded - Secrets Management Credentials (Only used when manager type is vault):
   #vaultusername: ZGV2
