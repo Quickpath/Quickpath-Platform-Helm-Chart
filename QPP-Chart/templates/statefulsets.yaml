@@ -32,6 +32,9 @@ spec:
       labels:
         app: app-runtime
     spec:
+      {{- if .Values.secretsmanager.serviceaccountname }}
+      serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
+      {{- end }
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
@@ -148,6 +151,9 @@ spec:
       labels:
         app: app-design
     spec:
+      {{- if .Values.secretsmanager.serviceaccountname }}
+      serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
+      {{- end }
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
@@ -350,6 +356,9 @@ spec:
       labels:
         app: app-subscription-manager
     spec:
+      {{- if .Values.secretsmanager.serviceaccountname }}
+      serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
+      {{- end }
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}

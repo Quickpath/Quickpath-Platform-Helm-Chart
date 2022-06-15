@@ -109,6 +109,8 @@ subscriptionconfig:
 secretsmanager:
   managertype: "aws"
   instanceprefix: "<PROVIDE VALUE>"
+  # Only Used if using Pod managed service account identity
+  #serviceAccountName: ""
 
   # =========== AWS =====================
   regionname: "us-east-2"
