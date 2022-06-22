@@ -34,7 +34,7 @@ spec:
     spec:
       {{- if .Values.secretsmanager.serviceaccountname }}
       serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
-      {{- end }
+      {{- end }}
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
@@ -153,7 +153,7 @@ spec:
     spec:
       {{- if .Values.secretsmanager.serviceaccountname }}
       serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
-      {{- end }
+      {{- end }}
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
@@ -358,7 +358,7 @@ spec:
     spec:
       {{- if .Values.secretsmanager.serviceaccountname }}
       serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
-      {{- end }
+      {{- end }}
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
