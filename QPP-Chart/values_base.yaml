@@ -2,27 +2,31 @@
 # The Kubernetes namespace for platform deployment
 kubernetes:
   createnamespace: "false"
-  #kubernetes_namespace: "qp-demo-platform"
+  # kubernetes_namespace: "qp-demo-platform"
   platformnamespace: <PROVIDE VALUE>
   infrastructurenamespace: <PROVIDE VALUE>
-  #Cluster type options: eks, gks, aks, microk8s
+  # Cluster type options: eks, gks, aks, microk8s
   clustertype: "<PROVIDE VALUE>"
+
+  # Storage class name (optional).  If there is more than one Quickpath instance on the same Azure AKS Cluster,
+  # the storage class needs to have different names between instances.  Specify the name or it will default ot app-storage
+  # storagename=<PROVIDE VALUE>
+  
   # Only used for a microk8s environment when running locally
   #microk8smountpath: "/home/ubuntu/environment/QP-Platform/"
   #is_microk8s_development_environment: "false"
-
-
-
 
 # ingress_type is either "alb" | "microk8s"
 loadbalancer:
   ingresstype: "<PROVIDE VALUE>"
   sslenabled: "false"
+  # Provide a hostname when multiple ingresses are installed on the same cluster
+  # ingresshostname: <PROVIDE VALUE>
   # Load balancer exposed internally or internet facing
   # internal or internet-facing valid values
   ingressscheme: <PROVIDE VALUE>
   # For AWS Ingress :: `arn` of certificate for use in ingress
-  #certificate: "arn:aws:acm:us-east-2:042960725425:certificate/36d43be2-8832-46df-b221-2aa9e574ecfc"
+  #certificate: "<PROVIDE VALUE"
 
 
 # =============================================================================

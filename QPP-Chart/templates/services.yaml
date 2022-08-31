@@ -19,7 +19,10 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - http:
+    - {{- if .Values.loadbalancer.ingresshostname }}
+      host: {{.Values.loadbalancer.ingresshostname}}
+      {{- end }}
+      http:
         paths:
         - path: /api/service
           pathType: Prefix
