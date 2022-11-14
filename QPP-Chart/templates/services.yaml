@@ -34,11 +34,20 @@ spec:
           backend:
             serviceName: app-dashboard-service
             servicePort: 80
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: app-design-service
+              port: 
+                number: 80
         - path: /
           pathType: Prefix
           backend:
-            serviceName: app-design-service
-            servicePort: 80
+            service:
+              name: app-ui-service
+              port: 
+                number: 80
 {{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "alb" }}
 apiVersion: extensions/v1beta1
@@ -70,11 +79,20 @@ spec:
           backend:
             serviceName: app-dashboard-service
             servicePort: 80
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: app-design-service
+              port: 
+                number: 80
         - path: /
           pathType: Prefix
           backend:
-            serviceName: app-design-service
-            servicePort: 80
+            service:
+              name: app-ui-service
+              port: 
+                number: 80
 {{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "microk8s" }}
 ---
@@ -107,11 +125,18 @@ spec:
               name: app-dashboard-service
               port:
                 number: 80
-        - path: /
+        - path: /api
           pathType: Prefix
           backend:
             service:
               name: app-design-service
+              port: 
+                number: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: app-ui-service
               port: 
                 number: 80
 
@@ -165,6 +190,22 @@ spec:
       protocol: TCP
       name: http
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-ui-service
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  type: NodePort
+  selector:
+    app: app-ui-server
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+
 {{- if .Values.secretsmanager.vaultusername }}
 ---
 kind: Service
@@ -175,16 +216,4 @@ metadata:
 spec:
   type: ExternalName
   externalName: vault.{{.Values.kubernetes.infrastructurenamespace}}.svc.cluster.local
-{{- end }}
-
-{{- if .Values.keycloak }}
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: keycloak-infra-svc
-  namespace: {{.Values.kubernetes.platformnamespace}}
-spec:
-  type: ExternalName
-  externalName: {{.Values.keycloak.externalservicename}}.{{.Values.kubernetes.infrastructurenamespace}}.svc.cluster.local
 {{- end }}

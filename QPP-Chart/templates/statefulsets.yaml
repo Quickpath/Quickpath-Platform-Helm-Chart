@@ -101,10 +101,8 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
-            - mountPath: /app/server
+            - mountPath: /app/server/qpp/
               name: app-codebase
-            - mountPath: /app/ui
-              name: app-ui-codebase
             - mountPath: /app/logs
               name: app-codebase-logs
             - mountPath: /app/run_app_runtime.sh
@@ -117,11 +115,7 @@ spec:
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main"
-            type: Directory
-        - name: app-ui-codebase
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/qpp"
             type: Directory
         - name: app-codebase-logs
           hostPath:
@@ -166,27 +160,27 @@ spec:
               command:
                 - "curl"
                 - "--fail"
-                - "http://localhost:8080/api/liveness"
+                - "http://localhost:8080/api/liveness?startup=True"
             initialDelaySeconds: 1
-            periodSeconds: 10
+            periodSeconds: 1
             failureThreshold: 80
           livenessProbe:
             exec:
               command:
                 - "curl"
                 - "--fail"
-                - "http://localhost:8080/api/liveness"
-            initialDelaySeconds: 10
-            periodSeconds: 15
-            failureThreshold: 2
+                - "http://localhost:8080/api/liveness?liveness=True"
+            initialDelaySeconds: 1
+            periodSeconds: 30
+            failureThreshold: 3
           readinessProbe:
             exec:
               command:
                 - "curl"
                 - "--fail"
-                - "http://localhost:8080/api/liveness"
-            initialDelaySeconds: 10
-            periodSeconds: 15
+                - "http://localhost:8080/api/liveness?readiness=True"
+            initialDelaySeconds: 1
+            periodSeconds: 30
             failureThreshold: 2
           envFrom:
             - configMapRef:
@@ -220,13 +214,9 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
-            - mountPath: /app/server
+            - mountPath: /app/server/qpp/
               name: app-codebase
-            - mountPath: /app/ui
-              name: app-ui-codebase
-            - mountPath: /app/logs
-              name: app-codebase-logs
-            - mountPath: /app/run_app_design.sh
+            - mountPath: /app/server/run_app_design.sh
               name: run-app-design
       {{- end }}
       volumes:
@@ -236,21 +226,19 @@ spec:
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main"
-            type: Directory
-        - name: app-ui-codebase
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
-            type: Directory
-        - name: app-codebase-logs
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/qpp"
             type: Directory
         - name: run-app-design
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_design.sh"
             type: File
       {{- end }}
+
+
+
+
+
+
 
 ---
 apiVersion: apps/v1
@@ -315,8 +303,6 @@ spec:
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
-            - mountPath: /app/ui
-              name: app-ui-codebase
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
@@ -328,10 +314,6 @@ spec:
         - name: app-codebase
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main"
-            type: Directory
-        - name: app-ui-codebase
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
             type: Directory
         - name: app-codebase-logs
           hostPath:
@@ -405,8 +387,6 @@ spec:
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
-            - mountPath: /app/ui
-              name: app-ui-codebase
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
@@ -418,10 +398,6 @@ spec:
         - name: app-codebase
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main"
-            type: Directory
-        - name: app-ui-codebase
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
             type: Directory
         - name: app-codebase-logs
           hostPath:
@@ -516,12 +492,10 @@ spec:
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
-            - mountPath: /app/ui
-              name: app-ui-codebase
             - mountPath: /app/logs
               name: app-codebase-logs
-            - mountPath: /app/run_app_design.sh
-              name: run-app-design
+            - mountPath: /app/run_subscription_manager.sh
+              name: run-subscription-manager
       {{- end }}
       volumes:
         - name: tz
@@ -532,16 +506,160 @@ spec:
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main"
             type: Directory
-        - name: app-ui-codebase
-          hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/new-ui/dist"
-            type: Directory
         - name: app-codebase-logs
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
             type: Directory
-        - name: run-app-design
+        - name: run-subscription-manager
           hostPath:
-            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_design.sh"
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_subscription_manager.sh"
             type: File
       {{- end }}
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-ui-server
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-ui-server
+  serviceName: app-ui-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-ui-server
+    spec:
+      terminationGracePeriodSeconds: 15
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app-ui-server
+          imagePullPolicy: Always
+          image: &containerImage quickpath/ui-server:{{.Values.image.tag}}
+          startupProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost/"
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 80
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost/"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - "curl"
+                - "--fail"
+                - "http://localhost/"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+          resources:
+            requests:
+              memory: {{ .Values.dashboardconfig.memoryrequest | quote }}
+              cpu: {{ .Values.dashboardconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.dashboardconfig.memorylimit | quote }}
+              cpu: {{ .Values.dashboardconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+
+
+
+
+
+
+
+
+
+
+{{- if eq .Values.kubernetes.clustertype "microk8s" }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-design-integration-test
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-design-integration-test
+  serviceName: app-fastapi-integration-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-design-integration-test
+    spec:
+      {{- if .Values.secretsmanager.serviceaccountname }}
+      serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
+      {{- end }}
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app-design-integration-test
+          imagePullPolicy: Always
+          image: &containerImage quickpath/design-integration-test:{{.Values.image.tag}}
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.keycloak }}
+            - secretRef:
+                name: "keycloak"
+          {{- end }}
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.appdesignconfig.memoryrequest | quote }}
+              cpu: {{ .Values.appdesignconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.appdesignconfig.memorylimit | quote }}
+              cpu: {{ .Values.appdesignconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+            - mountPath: /app/server/qpp/
+              name: app-codebase-fastapi
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+        - name: app-codebase-fastapi
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/qpp"
+            type: Directory
+{{- end }}

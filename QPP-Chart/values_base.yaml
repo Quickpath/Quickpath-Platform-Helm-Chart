@@ -118,6 +118,7 @@ secretsmanager:
 
   # =========== AWS =====================
   regionname: "us-east-2"
+  secretcachingenabled: "false" # "false"
 
   #Authorization type values: serviceaccount, accesskey
   authtype: "serviceaccount"
@@ -167,14 +168,10 @@ redis:
   # password:
 
 
-# Base64 Encoded -  Keycloak
-keycloak:
-  clientid: <PROVIDE VALUE>
-  clientsecret: <PROVIDE VALUE>
-  realm: <PROVIDE VALUE>
-  adminusername: <PROVIDE VALUE>
-  adminpassword: <PROVIDE VALUE>
-  externalservicename: "keycloak-http"
+# UI Authentication
+basicauth:
+  enabled: true
+  expirationminutes: 720
 
 
 # Microsoft Authentication

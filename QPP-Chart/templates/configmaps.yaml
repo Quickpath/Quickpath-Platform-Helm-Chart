@@ -60,6 +60,8 @@ data:
 
   {{- if eq .Values.secretsmanager.managertype "aws" }}
   SECRETS_AWS_REGION_NAME: {{ .Values.secretsmanager.regionname | quote}}
+  SECRETS_AWS_CACHING_ENABLED: {{ .Values.secretsmanager.secretcachingenabled | quote }}
+
   {{- if eq .Values.secretsmanager.authtype "accesskey" }}
   #SECRETS_AWS_ACCESS_KEY_ID: 'SECRET'
   #SECRET_AWS_SECRET_ACCESS_KEY: 'SECRET'
@@ -78,12 +80,8 @@ data:
   {{- end }}
 
 
-  QP_KEYCLOAK_URL: "http://keycloak-infra-svc/auth/"
-  #QP_KEYCLOAK_CLIENT_ID: 'SECRET'
-  #QP_KEYCLOAK_REALM_NAME: 'SECRET'
-  #QP_KEYCLOAK_SECRET: 'SECRET'
-  #QP_KEYCLOAK_ADMIN_USERNAME: 'SECRET'
-  #QP_KEYCLOAK_ADMIN_PASSWORD: 'SECRET'
+  IS_BASIC_AUTH_ENABLED: {{ .Values.basicauth.enabled | quote }}
+  BASIC_AUTH_EXPIRATION_MINUTES: {{ .Values.basicauth.expirationminutes | default "720" | quote }}
 
   {{- if .Values.msal }}
   MSAL_PLATFORM_BASE_URL: {{ .Values.msal.platformbaseurl | quote}}
