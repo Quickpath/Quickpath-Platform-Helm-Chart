@@ -594,7 +594,7 @@ spec:
 
 
 
-{{- if eq .Values.kubernetes.clustertype "microk8s" }}
+{{- if eq .Values.kubernetes.enable_integration_test "true" }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -605,7 +605,7 @@ spec:
   selector:
     matchLabels:
       app: app-design-integration-test
-  serviceName: app-fastapi-integration-service
+  serviceName: app-design-integration-service
   replicas: 1
   template:
     metadata:
@@ -653,12 +653,12 @@ spec:
             - mountPath: /etc/localtime
               name: tz
             - mountPath: /app/server/qpp/
-              name: app-codebase-fastapi
+              name: app-codebase-design
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
-        - name: app-codebase-fastapi
+        - name: app-codebase-design
           hostPath:
             path: "{{ .Values.kubernetes.microk8smountpath }}main/qpp"
             type: Directory

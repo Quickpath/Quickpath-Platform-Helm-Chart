@@ -109,14 +109,14 @@ subscriptionconfig:
   logconsolelevel: "DEBUG"
   logfilelevel: "DEBUG"
 # =============================================================================
-# secrets_manager_type is either `aws` or  `vault`
+# secrets_manager_type is either `aws` | `google` | `azure` | `vault`
 secretsmanager:
   managertype: "aws"
   instanceprefix: "<PROVIDE VALUE>"
   # Only Used if using Pod managed service account identity
   #serviceAccountName: ""
 
-  # =========== AWS =====================
+  # =========== AWS ===============================================================
   regionname: "us-east-2"
   secretcachingenabled: "false" # "false"
 
@@ -127,18 +127,22 @@ secretsmanager:
   #accesskeyid: <PROVIDE VALUE>
   #secretaccesskey: <PROVIDE VALUE>
 
-  # ======== Vault ========================
+  # ======== Vault ==================================================================
   #vaulturl: "http://vault-svc"
 
   # Base64 Encoded - Secrets Management Credentials (Only used when manager type is vault):
   #vaultusername: ZGV2
   #vaultpassword: RG9ja2VySXNDb29s
 
-  # ======== Azure ======================
+  # ======== Azure ====================================================================
   azurevaulturl: '<PROVIDE VALUE>'
   azuretenant: '<PROVIDE VALUE>'
   azureclientid: '<PROVIDE VALUE>'
   azureclientsecret: '<PROVIDE VALUE>'
+
+  # ======== Google ===================================================================
+  # Base64 Encoded
+  googleserviceaccountjson: '<PROVIDE B64 Encoded Value>'
 
 # =============================================================================
 # New Relic Configuration
@@ -155,7 +159,7 @@ newrelic:
 mysql:
   rootpassword: <PROVIDE VALUE>
   databasename: <PROVIDE VALUE>
-  databaseuser: <PROVIDE VALUE>=
+  databaseuser: <PROVIDE VALUE>
   databasepassword: <PROVIDE VALUE>
   databasehost: app-mysql
   databaseport: 3306
