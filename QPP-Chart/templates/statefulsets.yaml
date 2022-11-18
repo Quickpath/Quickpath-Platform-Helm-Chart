@@ -98,8 +98,10 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server/qpp/
               name: app-codebase
@@ -210,9 +212,10 @@ spec:
               cpu: {{ .Values.appdesignconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
-          volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server/qpp/
               name: app-codebase
@@ -297,9 +300,10 @@ spec:
             limits:
               memory: {{ .Values.schedulerconfig.memorylimit | quote }}
               cpu: {{ .Values.schedulerconfig.cpulimit | quote }}
-          volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -382,8 +386,10 @@ spec:
               memory: {{ .Values.subscriptionconfig.memorylimit | quote }}
               cpu: {{ .Values.subscriptionconfig.cpulimit | quote }}
           volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -487,8 +493,10 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -578,8 +586,10 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
+      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
+      {{- end }}
       volumes:
         - name: tz
           hostPath:

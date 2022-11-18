@@ -14,10 +14,12 @@ parameters:
   type: gp2
 provisioner: kubernetes.io/aws-ebs
 {{- end }}
-{{- if eq .Values.kubernetes.clustertype "gke" }}
-parameters:
-  type: pd-ssd
+{{- if eq .Values.kubernetes.clustertype "gks" }}
 provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  fstype: ext4
+  replication-type: none
 {{- end }}
 {{- if eq .Values.kubernetes.clustertype "aks" }}
 parameters:

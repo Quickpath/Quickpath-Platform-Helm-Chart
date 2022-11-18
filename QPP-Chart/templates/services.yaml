@@ -49,6 +49,59 @@ spec:
               port: 
                 number: 80
 {{- end }}
+{{- if eq .Values.loadbalancer.ingresstype "gce" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {{ .Values.kubernetes.platformnamespace }}
+  name: app-ingress
+  annotations:
+    # If the class annotation is not specified it defaults to "gce".
+    {{- if eq .Values.loadbalancer.ingressscheme "internet-facing" }}
+    kubernetes.io/ingress.class: "gce"
+    {{ else }}
+    kubernetes.io/ingress.class: "gce-internal"
+    {{- end }}
+    {{- if eq .Values.loadbalancer.sslenabled "true" }}
+    kubernetes.io/ingress.global-static-ip-name: my-static-address
+    {{- end }}
+    {{- if eq .Values.loadbalancer.disablehttp "true" }}
+    kubernetes.io/ingress.allow-http: "false"
+    {{- end }}
+
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /api/service
+          pathType: Prefix
+          backend:
+            service:
+              name: app-runtime-service
+              port:
+                number: 80
+        - path: /dash
+          pathType: Prefix
+          backend:
+            service:
+              name: app-dashboard-service
+              port:
+                number: 80
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: app-design-service
+              port: 
+                number: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: app-ui-service
+              port: 
+                number: 80
+{{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "alb" }}
 apiVersion: extensions/v1beta1
 kind: Ingress
