@@ -80,13 +80,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:
@@ -97,8 +97,8 @@ spec:
               cpu: {{ .Values.appruntimeconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
           volumeMounts:
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
@@ -110,10 +110,12 @@ spec:
             - mountPath: /app/run_app_runtime.sh
               name: run-app-runtime
       {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
@@ -195,13 +197,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:
@@ -212,7 +214,8 @@ spec:
               cpu: {{ .Values.appdesignconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+          volumeMounts:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
@@ -222,10 +225,12 @@ spec:
             - mountPath: /app/server/run_app_design.sh
               name: run-app-design
       {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
@@ -285,13 +290,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:
@@ -300,7 +305,8 @@ spec:
             limits:
               memory: {{ .Values.schedulerconfig.memorylimit | quote }}
               cpu: {{ .Values.schedulerconfig.cpulimit | quote }}
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+          volumeMounts:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
@@ -310,10 +316,12 @@ spec:
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
@@ -370,13 +378,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:
@@ -385,8 +393,8 @@ spec:
             limits:
               memory: {{ .Values.subscriptionconfig.memorylimit | quote }}
               cpu: {{ .Values.subscriptionconfig.cpulimit | quote }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
           volumeMounts:
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
@@ -396,10 +404,12 @@ spec:
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
@@ -475,13 +485,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:
@@ -492,8 +502,8 @@ spec:
               cpu: {{ .Values.dashboardconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
           volumeMounts:
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
@@ -505,10 +515,12 @@ spec:
             - mountPath: /app/run_subscription_manager.sh
               name: run-subscription-manager
       {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
           hostPath:
@@ -586,14 +598,14 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-      {{- if eq .Values.kubernetes.clustertype "aws" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}      
             - mountPath: /etc/localtime
               name: tz
-      {{- end }}
       volumes:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
 
 
 
@@ -642,13 +654,13 @@ spec:
                 name: "app-mysql"
             - secretRef:
                 name: "app-redis"
-          {{- if .Values.keycloak }}
-            - secretRef:
-                name: "keycloak"
-          {{- end }}
           {{- if .Values.msal }}
             - secretRef:
                 name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
           {{- end }}
           resources:
             requests:

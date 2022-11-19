@@ -177,6 +177,12 @@ basicauth:
   enabled: true
   expirationminutes: 720
 
+# Google Authentication
+# Comment Out if not used
+googleauth:
+  google_oauth_client_id: <PROVIDE B64 ENCODED VALUE>
+  google_oauth_client_secret: "PROVIDE B64 ENCODED VALUE"
+  platformbaseurl: "http://dev.quickpath.com"
 
 # Microsoft Authentication
 # Comment Out if not used
