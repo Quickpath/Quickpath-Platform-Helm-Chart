@@ -135,17 +135,13 @@ spec:
         - path: /api
           pathType: Prefix
           backend:
-            service:
-              name: app-design-service
-              port: 
-                number: 80
+            serviceName: app-design-service
+            servicePort: 80
         - path: /
           pathType: Prefix
           backend:
-            service:
-              name: app-ui-service
-              port: 
-                number: 80
+            serviceName: app-ui-service
+            servicePort: 80
 {{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "microk8s" }}
 ---
