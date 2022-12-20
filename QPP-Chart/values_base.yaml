@@ -64,6 +64,9 @@ appdesignconfig:
   logfilelevel: "DEBUG"
   sqlalchemyloglevel: "WARNING"
   rootloglevel: "WARNING"
+  # Base64 encoded value used for basic authentication initial
+  # password.
+  sessionsecret: "UXVpY2twYXRo"
 
 appruntimeconfig:
   replicacountmin: 1
@@ -79,9 +82,7 @@ appruntimeconfig:
   cpulimit: "1000m"
   logconsolelevel: "DEBUG"
   logfilelevel: "DEBUG"
-  # Base64 encoded value used for basic authentication initial
-  # password.
-  sessionsecret: "UXVpY2twYXRo"
+  
 
 dashboardconfig:
   replicacount: 1
