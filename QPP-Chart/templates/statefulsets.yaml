@@ -166,8 +166,8 @@ spec:
                 - "--fail"
                 - "http://localhost:8080/api/liveness?startup=True"
             initialDelaySeconds: 1
-            periodSeconds: 1
-            failureThreshold: 80
+            periodSeconds: 5
+            failureThreshold: 150
           livenessProbe:
             exec:
               command:
@@ -176,7 +176,7 @@ spec:
                 - "http://localhost:8080/api/liveness?liveness=True"
             initialDelaySeconds: 1
             periodSeconds: 30
-            failureThreshold: 3
+            failureThreshold: 5
           readinessProbe:
             exec:
               command:
@@ -185,7 +185,7 @@ spec:
                 - "http://localhost:8080/api/liveness?readiness=True"
             initialDelaySeconds: 1
             periodSeconds: 30
-            failureThreshold: 2
+            failureThreshold: 4
           envFrom:
             - configMapRef:
                 name: os-environment-variables
