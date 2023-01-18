@@ -103,7 +103,8 @@ spec:
                 number: 80
 {{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "alb" }}
-apiVersion: extensions/v1beta1
+#apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: {{ .Values.kubernetes.platformnamespace }}
@@ -125,23 +126,31 @@ spec:
         - path: /api/service
           pathType: Prefix
           backend:
-            serviceName: app-runtime-service
-            servicePort: 80
+            service:
+              name: app-runtime-service
+              port:
+                number: 80
         - path: /dash
           pathType: Prefix
           backend:
-            serviceName: app-dashboard-service
-            servicePort: 80
+            service:
+              name: app-dashboard-service
+              port:
+                number: 80
         - path: /api
           pathType: Prefix
           backend:
-            serviceName: app-design-service
-            servicePort: 80
+            service:
+              name: app-design-service
+              port: 
+                number: 80
         - path: /
           pathType: Prefix
           backend:
-            serviceName: app-ui-service
-            servicePort: 80
+            service:
+              name: app-ui-service
+              port: 
+                number: 80
 {{- end }}
 {{- if eq .Values.loadbalancer.ingresstype "microk8s" }}
 ---
