@@ -47,11 +47,9 @@ image:
 
 # =============================================================================
 # Application Configuration
-#app_replica_count: 1
 appdesignconfig:
   replicacount: 1
   gunicornworkercount: '3'
-  gunicornthreadcount: '15'
   # alembic_upgrade_or_downgrade: 'upgrade'
   # alembic_revision_guid: 'head'
   # =============================================================================
@@ -73,7 +71,6 @@ appruntimeconfig:
   replicacountmax: 2
   cputhresholdpercentage: 70
   gunicornworkercount: '3'
-  gunicornthreadcount: '15'
   # =============================================================================
   # Resource Allocations
   memoryrequest: "512Mi"
@@ -82,12 +79,26 @@ appruntimeconfig:
   cpulimit: "1000m"
   logconsolelevel: "DEBUG"
   logfilelevel: "DEBUG"
-  
+
+appceleryworkerconfig:
+  replicacountmin: 1
+  replicacountmax: 2
+  cputhresholdpercentage: 70
+  thread_count: 12
+
+  # =============================================================================
+  # Resource Allocations
+  memoryrequest: "512Mi"
+  memorylimit: "1Gi"
+  cpurequest: "500m"
+  cpulimit: "1000m"
+  logconsolelevel: "DEBUG"
+  logfilelevel: "DEBUG"
+
 
 dashboardconfig:
   replicacount: 1
   gunicornworkercount: '3'
-  gunicornthreadcount: '15'
   # =============================================================================
   # Resource Allocations
   memoryrequest: "512Mi"
@@ -195,3 +206,7 @@ msal:
   clientsecret: <PROVIDE BASE64 ENCODED VALUE>
   tenantid: <PROVIDE VALUE>
   platformbaseurl: <PROVIDE VALUE>
+
+# OpenAI
+openai:
+  apikey: <PROVIDE BASE64 ENCODED VALUE>
