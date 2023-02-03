@@ -9,13 +9,12 @@ data:
   QP_PLATFORM_VERSION: {{.Values.image.tag | quote}}
 
   DESIGN_GUNICORN_WORKER_COUNT: {{ .Values.appdesignconfig.gunicornworkercount  | squote }}
-  DESIGN_GUNICORN_THREAD_COUNT: {{ .Values.appdesignconfig.gunicornthreadcount  | squote }}
 
   RUNTIME_GUNICORN_WORKER_COUNT: {{ .Values.appruntimeconfig.gunicornworkercount  | squote }}
-  RUNTIME_GUNICORN_THREAD_COUNT: {{ .Values.appruntimeconfig.gunicornthreadcount  | squote }}
 
   DASHBOARD_MANAGER_GUNICORN_WORKER_COUNT: {{ .Values.dashboardconfig.gunicornworkercount  | squote }}
-  DASHBOARD_MANAGER_GUNICORN_THREAD_COUNT: {{ .Values.dashboardconfig.gunicornthreadcount  | squote }}
+
+  CELERY_THREAD_COUNT: {{ .Values.appceleryworkerconfig.threadcount | default "10" | squote }}
 
   ALEMBIC_UPGRADE_OR_DOWNGRADE: {{ .Values.appdesignconfig.alembicupgradeordowngrade | default "upgrade" | quote }}
   ALEMBIC_REVISION_GUID: {{ .Values.appdesignconfig.alembicrevisionguid | default "head" | quote }}
@@ -42,6 +41,8 @@ data:
   APP_RUNTIME_LOG_CONSOLE_LEVEL: {{ .Values.appruntimeconfig.logconsolelevel | quote}}
   APP_RUNTIME_LOG_FILE_LEVEL: {{ .Values.appruntimeconfig.logfilelevel | quote}}
 
+  APP_CELERY_WORKER_LOG_CONSOLE_LEVEL: {{ .Values.appceleryworkerconfig.logconsolelevel | quote}}
+  
   APP_DASHBOARD_MANAGER_LOG_CONSOLE_LEVEL: {{ .Values.dashboardconfig.logconsolelevel | quote}}
   APP_DASHBOARD_MANAGER_LOG_FILE_LEVEL: {{ .Values.dashboardconfig.logfilelevel | quote}}
 

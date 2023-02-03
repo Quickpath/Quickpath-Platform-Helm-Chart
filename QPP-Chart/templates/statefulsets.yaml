@@ -26,7 +26,7 @@ spec:
   selector:
     matchLabels:
       app: app-runtime
-  replicas: {{.Values.appruntimeconfig.replicacount}}
+  replicas: {{.Values.appruntimeconfig.replicacountmin}}
   template:
     metadata:
       labels:
@@ -39,7 +39,7 @@ spec:
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
       containers:
-        - name: app
+        - name: app-runtime
           imagePullPolicy: Always
           image: &containerImage quickpath/app-runtime:{{.Values.image.tag}}
           startupProbe:
@@ -97,7 +97,7 @@ spec:
               cpu: {{ .Values.appruntimeconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
           volumeMounts:
             - mountPath: /etc/localtime
               name: tz
@@ -110,7 +110,7 @@ spec:
             - mountPath: /app/run_app_runtime.sh
               name: run-app-runtime
       {{- end }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
       volumes:
         - name: tz
           hostPath:
@@ -130,7 +130,119 @@ spec:
             path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_runtime.sh"
             type: File
       {{- end }}
-      
+
+
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: "app-celery-worker-autoscaler"
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  maxReplicas: {{ .Values.appceleryworkerconfig.replicacountmax }}
+  minReplicas: {{ .Values.appceleryworkerconfig.replicacountmin }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: app-celery-worker
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.appceleryworkerconfig.cputhresholdpercentage }}
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-celery-worker
+  namespace: {{.Values.kubernetes.platformnamespace}}
+spec:
+  selector:
+    matchLabels:
+      app: app-celery-worker
+  replicas: {{.Values.appceleryworkerconfig.replicacountmin}}
+  template:
+    metadata:
+      labels:
+        app: app-celery-worker
+    spec:
+      {{- if .Values.secretsmanager.serviceaccountname }}
+      serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
+      {{- end }}
+      terminationGracePeriodSeconds: 300
+      imagePullSecrets:
+        - name: {{.Values.dockerhub.secretname}}
+      containers:
+        - name: app-celery-worker
+          imagePullPolicy: Always
+          image: &containerImage quickpath/app-runtime:{{.Values.image.tag}}
+          env:
+            - name: IS_CELERY_WORKER
+              value: "true"
+          envFrom:
+            - configMapRef:
+                name: os-environment-variables
+            - secretRef:
+                name: {{.Values.dockerhub.secretname}}
+            - secretRef:
+                name: "app"
+            - secretRef:
+                name: "app-mysql"
+            - secretRef:
+                name: "app-redis"
+          {{- if .Values.msal }}
+            - secretRef:
+                name: "msal"
+          {{- end }}
+          {{- if .Values.googleauth }}
+            - secretRef:
+                name: "googleauth"
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.appceleryworkerconfig.memoryrequest | quote }}
+              cpu: {{ .Values.appceleryworkerconfig.cpurequest | quote }}
+            limits:
+              memory: {{ .Values.appceleryworkerconfig.memorylimit | quote }}
+              cpu: {{ .Values.appceleryworkerconfig.cpulimit | quote }}
+          ports:
+            - containerPort: 8080
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz
+      {{- end }}
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+            - mountPath: /app/server/qpp/
+              name: app-codebase
+            - mountPath: /app/logs
+              name: app-codebase-logs
+            - mountPath: /app/server/run_app_runtime.sh
+              name: run-app-runtime
+      {{- end }}
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
+      volumes:
+        - name: tz
+          hostPath:
+            path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq .Values.kubernetes.clustertype "microk8s" }}
+        - name: app-codebase
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/qpp"
+            type: Directory
+        - name: app-codebase-logs
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/logs"
+            type: Directory
+        - name: run-app-runtime
+          hostPath:
+            path: "{{ .Values.kubernetes.microk8smountpath }}main/run_app_runtime.sh"
+            type: File
+      {{- end }}
 
 ---
 apiVersion: apps/v1
@@ -214,7 +326,7 @@ spec:
               cpu: {{ .Values.appdesignconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
           volumeMounts:
             - mountPath: /etc/localtime
               name: tz
@@ -225,7 +337,7 @@ spec:
             - mountPath: /app/server/run_app_design.sh
               name: run-app-design
       {{- end }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
       volumes:
         - name: tz
           hostPath:
@@ -305,7 +417,7 @@ spec:
             limits:
               memory: {{ .Values.schedulerconfig.memorylimit | quote }}
               cpu: {{ .Values.schedulerconfig.cpulimit | quote }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
           volumeMounts:
             - mountPath: /etc/localtime
               name: tz
@@ -316,7 +428,7 @@ spec:
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
       volumes:
         - name: tz
           hostPath:
@@ -393,7 +505,7 @@ spec:
             limits:
               memory: {{ .Values.subscriptionconfig.memorylimit | quote }}
               cpu: {{ .Values.subscriptionconfig.cpulimit | quote }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
           volumeMounts:
             - mountPath: /etc/localtime
               name: tz
@@ -404,7 +516,7 @@ spec:
             - mountPath: /app/logs
               name: app-codebase-logs
       {{- end }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
       volumes:
         - name: tz
           hostPath:
@@ -502,7 +614,7 @@ spec:
               cpu: {{ .Values.dashboardconfig.cpulimit | quote }}
           ports:
             - containerPort: 8080
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
           volumeMounts:
             - mountPath: /etc/localtime
               name: tz
@@ -515,7 +627,7 @@ spec:
             - mountPath: /app/run_subscription_manager.sh
               name: run-subscription-manager
       {{- end }}
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
       volumes:
         - name: tz
           hostPath:
@@ -598,7 +710,7 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-      {{- if ne .Values.kubernetes.clustertype "gks" }}      
+      {{- if ne .Values.kubernetes.clustertype "gks" }}
             - mountPath: /etc/localtime
               name: tz
       volumes:
