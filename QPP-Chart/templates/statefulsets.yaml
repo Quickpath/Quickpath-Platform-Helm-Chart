@@ -22,11 +22,18 @@ kind: Deployment
 metadata:
   name: app-runtime
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
       app: app-runtime
   replicas: {{.Values.appruntimeconfig.replicacountmin}}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -76,18 +83,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.appruntimeconfig.memoryrequest | quote }}
@@ -159,6 +154,8 @@ kind: Deployment
 metadata:
   name: app-celery-worker
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
@@ -189,18 +186,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.appceleryworkerconfig.memoryrequest | quote }}
@@ -250,6 +235,8 @@ kind: StatefulSet
 metadata:
   name: app-design
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
@@ -305,18 +292,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.appdesignconfig.memoryrequest | quote }}
@@ -366,6 +341,8 @@ kind: StatefulSet
 metadata:
   name: app-scheduler
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
@@ -398,18 +375,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.schedulerconfig.memoryrequest | quote }}
@@ -451,6 +416,8 @@ kind: StatefulSet
 metadata:
   name: app-subscription-manager
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
@@ -486,18 +453,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.subscriptionconfig.memoryrequest | quote }}
@@ -541,6 +496,8 @@ kind: StatefulSet
 metadata:
   name: app-dashboard-manager
   namespace: {{.Values.kubernetes.platformnamespace}}
+  annotations: 
+    secret.reloader.stakater.com/reload: "app"
 spec:
   selector:
     matchLabels:
@@ -593,18 +550,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.dashboardconfig.memoryrequest | quote }}
@@ -762,18 +707,6 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
-            - secretRef:
-                name: "app-mysql"
-            - secretRef:
-                name: "app-redis"
-          {{- if .Values.msal }}
-            - secretRef:
-                name: "msal"
-          {{- end }}
-          {{- if .Values.googleauth }}
-            - secretRef:
-                name: "googleauth"
-          {{- end }}
           resources:
             requests:
               memory: {{ .Values.appdesignconfig.memoryrequest | quote }}

@@ -28,12 +28,9 @@ data:
   #QP_APP_DB_USERNAME: 'SECRET'
   #QP_APP_DB_PASSWORD: 'SECRET'
   QP_APP_ASYNC_BROKER_URL: {{ .Values.redis.host }}
-  {{- if .Values.redis.port }}
-  REDIS_PORT: {{ .Values.redis.port  | quote }}
-  {{- end }}
-  {{- if .Values.redis.password }}
+  REDIS_HOST: {{ .Values.redis.host }}
+  REDIS_PORT: {{ ((.Values).redis).port  | default "" | quote }}
   #REDIS_PASSWORD: 'SECRET'
-  {{- end }}
 
   APP_DESIGN_LOG_CONSOLE_LEVEL: {{ .Values.appdesignconfig.logconsolelevel | quote}}
   APP_DESIGN_LOG_FILE_LEVEL: {{ .Values.appdesignconfig.logfilelevel | quote}}
@@ -59,38 +56,23 @@ data:
   SECRETS_MANAGER_TYPE: {{ .Values.secretsmanager.managertype }}
   SECRETS_AWS_INSTANCE_PREFIX: {{ .Values.secretsmanager.instanceprefix | quote}}
 
-  {{- if eq .Values.secretsmanager.managertype "aws" }}
-  SECRETS_AWS_REGION_NAME: {{ .Values.secretsmanager.regionname | quote}}
-  SECRETS_AWS_CACHING_ENABLED: {{ .Values.secretsmanager.secretcachingenabled | quote }}
-
-  {{- if eq .Values.secretsmanager.authtype "accesskey" }}
+  SECRETS_AWS_REGION_NAME: {{ ((.Values).secretsmanager).regionname | default "" | quote}}
+  SECRETS_AWS_CACHING_ENABLED: {{ ((.Values).secretsmanager).secretcachingenabled | default "" | quote }}
   #SECRETS_AWS_ACCESS_KEY_ID: 'SECRET'
   #SECRET_AWS_SECRET_ACCESS_KEY: 'SECRET'
-  {{- end }}
-  {{- end }}
-  {{- if eq .Values.secretsmanager.managertype "vault" }}
-  QP_SECRETS_URL: {{ .Values.secretsmanager.vaulturl | quote}}
-  #QP_SECRETS_USERNAME: 'SECRET'
-  #QP_SECRETS_PASSWORD: 'SECRET'
-  {{- end }}
-  {{- if eq .Values.secretsmanager.managertype "azure" }}
-  SECRETS_AZURE_VAULT_URL: {{ .Values.secretsmanager.azurevaulturl | quote}}
+
+  SECRETS_AZURE_VAULT_URL: {{ ((.Values).secretsmanager).azurevaulturl | default "" | quote}}
   #SECETS_AZURE_TENANT: 'SECRET'
   #SECETS_AZURE_CLIENT_ID: 'SECRET'
   #SECRETS_AZURE_CLIENT_SECRET: 'SECRET'
-  {{- end }}
 
 
   IS_BASIC_AUTH_ENABLED: {{ .Values.basicauth.enabled | quote }}
   BASIC_AUTH_EXPIRATION_MINUTES: {{ .Values.basicauth.expirationminutes | default "720" | quote }}
 
-  {{- if .Values.msal }}
-  MSAL_PLATFORM_BASE_URL: {{ .Values.msal.platformbaseurl | quote}}
-  MSAL_CLIENT_ID: {{ .Values.msal.clientid | quote}}
+  MSAL_PLATFORM_BASE_URL: {{ ((.Values).msal).platformbaseurl | default "" | quote}}
+  MSAL_TENANT_ID: {{ ((.Values).msal).tenantid | default "" | quote}}
+  MSAL_CLIENT_ID: {{ ((.Values).msal).clientid | default "" | quote}}
   #MSAL_CLIENT_SECRET: 'SECRET'
-  MSAL_TENANT_ID: {{ .Values.msal.tenantid | quote}}
-  {{- end }}
 
-  {{- if .Values.googleauth }}
-  GOOGLE_PLATFORM_BASE_URL: {{ .Values.googleauth.platformbaseurl | quote}}
-  {{- end }}
+  GOOGLE_PLATFORM_BASE_URL: {{ ((.Values).googleauth).platformbaseurl | default "" | quote}}
