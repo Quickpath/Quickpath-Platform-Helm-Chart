@@ -29,7 +29,7 @@ data:
   #QP_APP_DB_PASSWORD: 'SECRET'
   QP_APP_ASYNC_BROKER_URL: {{ .Values.redis.host }}
   REDIS_HOST: {{ .Values.redis.host }}
-  REDIS_PORT: {{ ((.Values).redis).port  | default "" | quote }}
+  REDIS_PORT: {{ ((.Values).redis).port  | default "6379" | quote }}
   #REDIS_PASSWORD: 'SECRET'
 
   APP_DESIGN_LOG_CONSOLE_LEVEL: {{ .Values.appdesignconfig.logconsolelevel | quote}}

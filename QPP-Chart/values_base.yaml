@@ -16,6 +16,27 @@ kubernetes:
   #microk8smountpath: "/home/ubuntu/environment/QP-Platform/"
   #is_microk8s_development_environment: "false"
 
+
+secrets:
+  useExternalSecrets: "false"
+  externalSecretPath: ""
+  
+  # Access Key Auth is for Non-EKS Environments
+  auth:
+    accessKeyID: ""
+    secretAccessKey: ""
+
+  # Assumed Role Authentication
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: false
+    # Annotations to specify the assumed role in remote account
+    annotations: {
+      eks.amazonaws.com/role-arn: arn:aws:iam
+    }
+
+
+
 # ingress_type is either "alb" | "microk8s"
 loadbalancer:
   ingresstype: "<PROVIDE VALUE>"
