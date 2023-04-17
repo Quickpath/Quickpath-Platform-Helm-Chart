@@ -169,7 +169,7 @@ spec:
       {{- if .Values.secretsmanager.serviceaccountname }}
       serviceAccountName: {{.Values.secretsmanager.serviceaccountname}}
       {{- end }}
-      terminationGracePeriodSeconds: 300
+      terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: {{.Values.dockerhub.secretname}}
       containers:
