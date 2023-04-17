@@ -11,6 +11,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: default
+    namespace: {{.Values.kubernetes.platformnamespace}}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -38,3 +39,65 @@ rules:
   - apiGroups: ["autoscaling"]
     resources: ["horizontalpodautoscalers"]
     verbs: ["create", "delete", "patch", "update", "get", "watch", "list"]
+  - apiGroups:
+    - metrics.k8s.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+    - top
+
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: default-sa-access
+  namespace: {{.Values.kubernetes.platformnamespace}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: default-sa-access
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{.Values.kubernetes.platformnamespace}}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: default-sa-access
+  namespace: {{.Values.kubernetes.platformnamespace}}
+rules:
+  - apiGroups: [""]
+    resources:
+      - services
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+      - deployments
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["create", "delete", "patch", "update", "get", "watch", "list"]
+  - apiGroups:
+    - metrics.k8s.io
+    resources:
+    - nodes
+    verbs:
+    - pods
+    - get
+    - list
+    - top
