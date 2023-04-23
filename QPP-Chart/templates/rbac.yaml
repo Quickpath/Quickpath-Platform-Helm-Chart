@@ -23,6 +23,7 @@ rules:
   - apiGroups: [""]
     resources:
       - services
+      - nodes
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups:
       - apps
@@ -76,6 +77,7 @@ rules:
   - apiGroups: [""]
     resources:
       - services
+      - nodes
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups:
       - apps
