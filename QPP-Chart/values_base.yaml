@@ -20,7 +20,8 @@ kubernetes:
 secrets:
   useExternalSecrets: "false"
   externalSecretPath: ""
-  
+  region: ""
+
   # Access Key Auth is for Non-EKS Environments
   auth:
     accessKeyID: ""
@@ -105,7 +106,7 @@ appceleryworkerconfig:
   replicacountmin: 1
   replicacountmax: 2
   cputhresholdpercentage: 70
-  thread_count: 12
+  threadcount: 12
 
   # =============================================================================
   # Resource Allocations
