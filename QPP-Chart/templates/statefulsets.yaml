@@ -1,4 +1,4 @@
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "app-runtime-autoscaler"
@@ -14,8 +14,9 @@ spec:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: {{ .Values.appruntimeconfig.cputhresholdpercentage }}
-
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.appruntimeconfig.cputhresholdpercentage }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -128,7 +129,7 @@ spec:
 
 
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "app-celery-worker-autoscaler"
@@ -144,8 +145,9 @@ spec:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: {{ .Values.appceleryworkerconfig.cputhresholdpercentage }}
-
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.appceleryworkerconfig.cputhresholdpercentage }}
 
 
 ---
