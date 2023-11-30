@@ -229,6 +229,17 @@ msal:
   tenantid: <PROVIDE VALUE>
   platformbaseurl: <PROVIDE VALUE>
 
+ai:
+  backend: <PROVIDE VALUE> # openai | bedrock | None
+
 # OpenAI
 openai:
   apikey: <PROVIDE BASE64 ENCODED VALUE>
+  modelid: <PROVIDE VALUE>
+
+# Bedrock
+bedrock:
+  aws_access_key_id: <PROVIDE BASE64 ENCODED VALUE>
+  aws_secret_access_key: <PROVIDE BASE64 ENCODED VALUE>
+  aws_region_name: <PROVIDE VALUE>
+  bedrock_model_id: <PROVIDE VALUE>

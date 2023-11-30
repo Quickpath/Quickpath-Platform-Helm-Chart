@@ -76,3 +76,10 @@ data:
   #MSAL_CLIENT_SECRET: 'SECRET'
 
   GOOGLE_PLATFORM_BASE_URL: {{ ((.Values).googleauth).platformbaseurl | default "" | quote}}
+
+  OPENAI_MODEL_ID: {{ ((.Values).openai).modelid | default "" | quote}}
+
+  GENERATIVE_AI_BACKEND: {{ ((.Values).ai).backend | default "" | quote }}
+
+  AMAZON_BEDROCK_AWS_REGION_NAME: {{ ((.Values).bedrock).aws_region_name | default "" | quote }}
+  AMAZON_BEDROCK_MODEL_ID: {{ ((.Values).bedrock).model_id | default "" | quote }}
