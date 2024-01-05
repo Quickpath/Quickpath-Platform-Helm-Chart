@@ -49,7 +49,7 @@ spec:
       containers:
         - name: app-runtime
           imagePullPolicy: Always
-          image: &containerImage quickpath/app-runtime:{{.Values.image.tag}}
+          image: &containerImage quickpath/app-runtime{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag}}
           startupProbe:
             exec:
               command:
@@ -177,7 +177,7 @@ spec:
       containers:
         - name: app-celery-worker
           imagePullPolicy: Always
-          image: &containerImage quickpath/app-runtime:{{.Values.image.tag}}
+          image: &containerImage quickpath/app-runtime{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag}}
           env:
             - name: IS_CELERY_WORKER
               value: "true"
@@ -259,7 +259,7 @@ spec:
       containers:
         - name: app-design
           imagePullPolicy: Always
-          image: &containerImage quickpath/app-design:{{.Values.image.tag}}
+          image: &containerImage quickpath/app-design{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag}}
           startupProbe:
             exec:
               command:
@@ -517,7 +517,7 @@ spec:
       containers:
         - name: app-dashboard-manager
           imagePullPolicy: Always
-          image: &containerImage quickpath/dashboard-manager:{{.Values.image.tag}}
+          image: &containerImage quickpath/dashboard-manager{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag}}
           startupProbe:
             exec:
               command:
@@ -619,7 +619,7 @@ spec:
       containers:
         - name: app-ui-server
           imagePullPolicy: Always
-          image: &containerImage quickpath/ui-server:{{.Values.image.tag}}
+          image: &containerImage quickpath/ui-server{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag}}
           startupProbe:
             exec:
               command:

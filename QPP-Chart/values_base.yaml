@@ -62,10 +62,9 @@ dockerhub:
 image:
   registy: 'docker.io'
   tag: <PROVIDE VALUE>
-#app_dockerhub_image_tag: 'quickpath/app:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
-#scheduler_dockerhub_image_tag: 'quickpath/scheduler:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
-#subscription_manager_dockerhub_image_tag: 'quickpath/subscription-manager:3afe47d916f2f93b179d61f7125a3d3fe4ac363e'
-#redis_dockerhub_image_tag: 'quickpath/app-redis:b4789cde4cf45ee8a583ca14adbc8ce52e2e035d'
+  # environment is an optional parameter and defaults to production and should only be updated
+  # by the Quickpath Support team.  Specify 'dev' to pull interim image tags from the lower environments.
+  # environment: ''
 
 # =============================================================================
 # Application Configuration
