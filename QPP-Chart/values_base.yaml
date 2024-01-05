@@ -63,8 +63,8 @@ image:
   registy: 'docker.io'
   tag: <PROVIDE VALUE>
   # environment is an optional parameter and defaults to production and should only be updated
-  # by the Quickpath Support team.  Specify 'dev' to pull interim image tags from the lower environments.
-  # environment: ''
+  # by the Quickpath Support team.  Specify '-dev' to pull interim image tags from the lower environments.
+  # environment: -dev
 
 # =============================================================================
 # Application Configuration

@@ -362,7 +362,7 @@ spec:
       containers:
         - name: app
           imagePullPolicy: Always
-          image: quickpath/scheduler:{{.Values.image.tag }}
+          image: quickpath/scheduler{{ ((.Values).image).environment | default "" }}:{{.Values.image.tag }}
           readinessProbe:
             exec:
               command:
@@ -440,7 +440,7 @@ spec:
       containers:
         - name: app
           imagePullPolicy: Always
-          image: quickpath/subscription-manager:{{ .Values.image.tag }}
+          image: quickpath/subscription-manager{{ ((.Values).image).environment | default "" }}:{{ .Values.image.tag }}
           readinessProbe:
             exec:
               command:
