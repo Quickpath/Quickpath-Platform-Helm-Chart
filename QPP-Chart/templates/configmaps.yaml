@@ -52,6 +52,8 @@ data:
   APP_SQLALCHEMY_LOG_LEVEL: {{ .Values.appdesignconfig.sqlalchemyloglevel| default "WARNING" | quote}}
   APP_ROOT_LOG_LEVEL: {{ .Values.appdesignconfig.rootloglevel| default "WARNING" | quote}}
 
+  USE_VOLUME_MOUNT_SECRETS: {{ ((.Values).secrets).useVolumeMountSecrets | default "false" | quote }}
+
   #QP_APP_SECRET_KEY: 'SECRET'
   SECRETS_MANAGER_TYPE: {{ .Values.secretsmanager.managertype }}
   SECRETS_AWS_INSTANCE_PREFIX: {{ .Values.secretsmanager.instanceprefix | quote}}

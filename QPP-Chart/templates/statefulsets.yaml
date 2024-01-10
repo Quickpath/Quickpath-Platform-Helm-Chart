@@ -23,8 +23,11 @@ kind: Deployment
 metadata:
   name: app-runtime
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
+
 spec:
   selector:
     matchLabels:
@@ -84,6 +87,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.appruntimeconfig.memoryrequest | quote }}
@@ -98,6 +105,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server/qpp/
               name: app-codebase
@@ -111,6 +128,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -156,8 +183,11 @@ kind: Deployment
 metadata:
   name: app-celery-worker
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
+
 spec:
   selector:
     matchLabels:
@@ -188,6 +218,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.appceleryworkerconfig.memoryrequest | quote }}
@@ -202,6 +236,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server/qpp/
               name: app-codebase
@@ -215,6 +259,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -237,8 +291,11 @@ kind: StatefulSet
 metadata:
   name: app-design
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
+
 spec:
   selector:
     matchLabels:
@@ -294,6 +351,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.appdesignconfig.memoryrequest | quote }}
@@ -308,6 +369,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server/qpp/
               name: app-codebase
@@ -319,6 +390,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -343,8 +424,11 @@ kind: StatefulSet
 metadata:
   name: app-scheduler
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
+
 spec:
   selector:
     matchLabels:
@@ -377,6 +461,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.schedulerconfig.memoryrequest | quote }}
@@ -389,6 +477,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -400,6 +498,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -418,8 +526,10 @@ kind: StatefulSet
 metadata:
   name: app-subscription-manager
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -455,6 +565,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.subscriptionconfig.memoryrequest | quote }}
@@ -467,6 +581,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -478,6 +602,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -498,8 +632,11 @@ kind: StatefulSet
 metadata:
   name: app-dashboard-manager
   namespace: {{.Values.kubernetes.platformnamespace}}
+  {{- if eq ((.Values).secrets).useExternalSecrets "true" }}
   annotations: 
     secret.reloader.stakater.com/reload: "app"
+  {{- end }}
+
 spec:
   selector:
     matchLabels:
@@ -552,6 +689,10 @@ spec:
                 name: {{.Values.dockerhub.secretname}}
             - secretRef:
                 name: "app"
+            {{- range .Values.secretMounts.secret_names }}
+            - secretRef: 
+                name: {{ . }}
+            {{- end }}
           resources:
             requests:
               memory: {{ .Values.dashboardconfig.memoryrequest | quote }}
@@ -566,6 +707,16 @@ spec:
             - mountPath: /etc/localtime
               name: tz
       {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+            - mountPath: /etc/secret
+              name: secret-volume
+              readOnly: true
+        {{- range .Values.secretMounts.secret_names }}
+            - name: {{ . }}
+              mountPath: "/etc/secret/{{ . }}"
+              readOnly: true
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
             - mountPath: /app/server
               name: app-codebase
@@ -579,6 +730,16 @@ spec:
         - name: tz
           hostPath:
             path: /usr/share/zoneinfo/UTC
+      {{- end }}
+      {{- if eq ((.Values).secrets).useVolumeMountSecrets "true" }}
+        - name: secret-volume
+          secret:
+            secretName: app
+        {{- range .Values.secretMounts.secret_names }}
+        - name: {{ . }}
+          secret:
+            secretName: {{ . }}
+        {{- end }}
       {{- end }}
       {{- if eq .Values.kubernetes.clustertype "microk8s" }}
         - name: app-codebase
@@ -665,14 +826,6 @@ spec:
           hostPath:
             path: /usr/share/zoneinfo/UTC
       {{- end }}
-
-
-
-
-
-
-
-
 
 
 {{- if eq .Values.kubernetes.enable_integration_test "true" }}

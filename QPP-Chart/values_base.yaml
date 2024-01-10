@@ -18,6 +18,7 @@ kubernetes:
 
 
 secrets:
+  useVolumeMountSecrets: "true"
   useExternalSecrets: "false"
   externalSecretPath: ""
   region: ""
@@ -145,7 +146,7 @@ subscriptionconfig:
   logconsolelevel: "DEBUG"
   logfilelevel: "DEBUG"
 # =============================================================================
-# secrets_manager_type is either `aws` | `google` | `azure` | `vault`
+# secrets_manager_type is either `aws` | `google` | `azure` | `vault` | `kubernetes`
 secretsmanager:
   managertype: "aws"
   instanceprefix: "<PROVIDE VALUE>"
@@ -163,13 +164,15 @@ secretsmanager:
   #accesskeyid: <PROVIDE VALUE>
   #secretaccesskey: <PROVIDE VALUE>
 
-  # ======== Vault ==================================================================
+  # ========  ==================================================================
   #vaulturl: "http://vault-svc"
 
   # Base64 Encoded - Secrets Management Credentials (Only used when manager type is vault):
   #vaultusername: ZGV2
   #vaultpassword: RG9ja2VySXNDb29s
-
+  #vaultappid: 
+  #vaultsecretid: 
+  
   # ======== Azure ====================================================================
   azurevaulturl: '<PROVIDE VALUE>'
   azuretenant: '<PROVIDE VALUE>'
@@ -241,4 +244,14 @@ bedrock:
   aws_access_key_id: <PROVIDE BASE64 ENCODED VALUE>
   aws_secret_access_key: <PROVIDE BASE64 ENCODED VALUE>
   aws_region_name: <PROVIDE VALUE>
-  bedrock_model_id: <PROVIDE VALUE>
+  model_id: <PROVIDE VALUE>
+
+# Connector Secrets
+connectorSecrets:
+  example-parameter-set:
+    host: <PROVIDE VALUE>
+    port: <PROVIDE VALUE>
+
+secretMounts:
+  secret_names:
+    - keycloak
