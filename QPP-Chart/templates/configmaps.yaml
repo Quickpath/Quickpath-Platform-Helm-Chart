@@ -21,6 +21,7 @@ data:
   APP_RUNTIME_SERVICE: 'app-runtime-service'
   APP_DESIGN_SERVICE: 'app-design-service'
   DOCKERHUB_CREDS_SECRET_NAME: {{ .Values.dockerhub.secretname | quote  }}
+  MODEL_DOCKER_IMAGE_URL: {{ ((.Values).image).model_docker_image_url | quote }}
   #NEW_RELIC_ENVIRONMENT: 'SECRET'
   #QP_APP_DB_NAME: 'SECRET'
   QP_APP_DB_HOST: {{ .Values.mysql.databasehost | quote}}
