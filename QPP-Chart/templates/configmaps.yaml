@@ -27,7 +27,6 @@ data:
   #QP_APP_DB_NAME: 'SECRET'
   QP_APP_DB_HOST: {{ .Values.mysql.databasehost | quote}}
   QP_APP_DB_PORT: {{ .Values.mysql.databaseport | quote}}
-  DB_USE_SSL_CERTS: {{ .Values.mysql.use_ssl_certs | quote}}
   #QP_APP_DB_USERNAME: 'SECRET'
   #QP_APP_DB_PASSWORD: 'SECRET'
   QP_APP_ASYNC_BROKER_URL: {{ .Values.redis.host }}
