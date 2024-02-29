@@ -7,6 +7,7 @@ data:
   IS_MICROK8S_DEVELOPMENT_ENVIRONMENT: {{ if eq .Values.kubernetes.clustertype "microk8s" }}"true"{{ else }}"false"{{ end }}
   QP_PLATFORM_NAMESPACE: {{.Values.kubernetes.platformnamespace | quote}}
   QP_PLATFORM_VERSION: {{.Values.image.tag | quote}}
+  
 
   DESIGN_GUNICORN_WORKER_COUNT: {{ .Values.appdesignconfig.gunicornworkercount  | squote }}
 
@@ -26,6 +27,7 @@ data:
   #QP_APP_DB_NAME: 'SECRET'
   QP_APP_DB_HOST: {{ .Values.mysql.databasehost | quote}}
   QP_APP_DB_PORT: {{ .Values.mysql.databaseport | quote}}
+  DB_USE_SSL_CERTS: {{ .Values.mysql.use_ssl_certs | quote}}
   #QP_APP_DB_USERNAME: 'SECRET'
   #QP_APP_DB_PASSWORD: 'SECRET'
   QP_APP_ASYNC_BROKER_URL: {{ .Values.redis.host }}
@@ -69,6 +71,10 @@ data:
   #SECETS_AZURE_CLIENT_ID: 'SECRET'
   #SECRETS_AZURE_CLIENT_SECRET: 'SECRET'
 
+  EXTERNAL_STORAGE_AWS_S3_BUCKET_NAME: {{ ((.Values).externalstorage).bucketname | default "" | quote}}
+  # EXTERNAL_STORAGE_AWS_S3_SECRET_ACCESS_KEY: SECRET
+  # EXTERNAL_STORAGE_AWS_S3_ACCESS_KEY_ID: SECRET
+
 
   IS_BASIC_AUTH_ENABLED: {{ .Values.basicauth.enabled | quote }}
   BASIC_AUTH_EXPIRATION_MINUTES: {{ .Values.basicauth.expirationminutes | default "720" | quote }}
@@ -79,6 +85,9 @@ data:
   #MSAL_CLIENT_SECRET: 'SECRET'
 
   GOOGLE_PLATFORM_BASE_URL: {{ ((.Values).googleauth).platformbaseurl | default "" | quote}}
+
+  OKTA_DOMAIN: {{ ((.Values).oktaauth).okta_domain | default "" | quote}}
+  OKTA_PLATFORM_BASE_URL: {{ ((.Values).oktaauth).patform_base_url | default "" | quote}}
 
   OPENAI_MODEL_ID: {{ ((.Values).openai).modelid | default "" | quote}}
 

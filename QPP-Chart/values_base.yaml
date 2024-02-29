@@ -184,6 +184,15 @@ secretsmanager:
   # Base64 Encoded
   googleserviceaccountjson: '<PROVIDE B64 Encoded Value>'
 
+
+
+externalstorage:
+  bucketname: "qpp_dev_models"
+  # Base64 Encoded - AWS Credentials (Only used when externalstorage is aws)
+  accesskeyid: <PROVIDE B64 ENCODED VALUE>
+  secretaccesskey: <PROVIDE B64 ENCODED VALUE>
+
+
 # =============================================================================
 # New Relic Configuration
 # If you change `newrelic_environment_name`, you must create the environment config in the "/main/setup/newrelic.ini" file.
@@ -203,6 +212,8 @@ mysql:
   databasepassword: <PROVIDE VALUE>
   databasehost: app-mysql
   databaseport: 3306
+  # If ssl certs are used, Secret named `qp_meta_db_certs` must exist with keys `ssl_ca`, `ssl_key` and `ssl_cert`
+  use_ssl_certs: false
 
 # Redis Credentials (Optional)
 redis:
@@ -223,6 +234,15 @@ googleauth:
   google_oauth_client_id: <PROVIDE B64 ENCODED VALUE>
   google_oauth_client_secret: "PROVIDE B64 ENCODED VALUE"
   platformbaseurl: "http://dev.quickpath.com"
+
+oktaauth:
+  okta_domain: ""
+  patform_base_url: "http://dev.quickpath.com"
+
+  # Base64 encode
+  okta_oauth_client_id: ""
+  okta_oauth_client_secret: ""
+
 
 # Microsoft Authentication
 # Comment Out if not used
