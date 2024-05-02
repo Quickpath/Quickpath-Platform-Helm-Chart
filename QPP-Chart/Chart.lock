@@ -1,0 +1,12 @@
+dependencies:
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.23.0
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.19.2
+- name: qdrant
+  repository: https://qdrant.to/helm
+  version: 0.8.4
+digest: sha256:a3c33362a5ad17e84f0abccd845e71dde74b1d94ebc7822e57e67b0d499ea0d8
+generated: "2024-05-02T16:57:55.324510567Z"
