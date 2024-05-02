@@ -214,6 +214,9 @@ mysql:
   databaseport: 3306
   # If ssl certs are used, Secret named `qp_meta_db_certs` must exist with keys `ssl_ca`, `ssl_key` and `ssl_cert`
   use_ssl_certs: false
+  helm_deployment_enabled: true
+  nameOverride: "app-mysql"
+  fullnameOverride: "app-mysql"
 
 # Redis Credentials (Optional)
 redis:
@@ -221,7 +224,15 @@ redis:
   port: 6379
   #  Base64 Encoded - Redis Credentials (Optional)
   # password:
+  helm_deployment_enabled: true
+  nameOverride: "app-redis"
+  fullnameOverride: "app-redis"
 
+# Vector DB Qdrant
+qdrant:
+  helm_deployment_enabled: true
+  nameOverride: "app-vector-db"
+  fullnameOverride: "app-vector-db"
 
 # UI Authentication
 basicauth:

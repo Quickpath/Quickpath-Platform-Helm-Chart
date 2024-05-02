@@ -160,7 +160,7 @@ metadata:
   name: app-ingress
   namespace: {{.Values.kubernetes.platformnamespace}}
   annotations:
-    kubernetes.io/ingress.class: "public"
+#    kubernetes.io/ingress.class: "public"
     nginx.ingress.kubernetes.io/proxy-body-size: 200m
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
