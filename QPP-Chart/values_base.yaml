@@ -233,6 +233,9 @@ qdrant:
   helm_deployment_enabled: true
   nameOverride: "app-vector-db"
   fullnameOverride: "app-vector-db"
+  config:
+    service:
+      enableTls: false
 
 # UI Authentication
 basicauth:
@@ -277,6 +280,7 @@ bedrock:
   aws_secret_access_key: <PROVIDE BASE64 ENCODED VALUE>
   aws_region_name: <PROVIDE VALUE>
   model_id: <PROVIDE VALUE>
+  embedding_model_id: <PROVIDE VALUE>
 
 # Connector Secrets
 connectorSecrets:
