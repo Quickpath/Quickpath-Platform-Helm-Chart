@@ -94,3 +94,4 @@ data:
 
   AMAZON_BEDROCK_AWS_REGION_NAME: {{ ((.Values).bedrock).aws_region_name | default "" | quote }}
   AMAZON_BEDROCK_MODEL_ID: {{ ((.Values).bedrock).model_id | default "" | quote }}
+  AMAZON_BEDROCK_EMBEDDING_MODEL_ID: {{ ((.Values).bedrock).embedding_model_id | default "" | quote }}
